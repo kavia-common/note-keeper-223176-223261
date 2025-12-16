@@ -7,6 +7,17 @@ const swaggerSpec = require('../swagger');
 // Initialize express app
 const app = express();
 
+// Basic request logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    // eslint-disable-next-line no-console
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${ms}ms`);
+  });
+  next();
+});
+
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -45,7 +56,9 @@ app.use(express.json());
 app.use('/', routes);
 
 // Error handling middleware
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-console
   console.error(err.stack);
   res.status(500).json({
     status: 'error',

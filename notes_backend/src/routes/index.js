@@ -1,8 +1,10 @@
 const express = require('express');
 const healthController = require('../controllers/health');
+const notesRoutes = require('./notes');
 
 const router = express.Router();
-// Health endpoint
+
+// Health endpoint at root for backward-compat and at /health for clarity
 
 /**
  * @swagger
@@ -31,5 +33,24 @@ const router = express.Router();
  *                   example: development
  */
 router.get('/', healthController.check.bind(healthController));
+
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health endpoint
+ *     responses:
+ *       200:
+ *         description: Service health check passed
+ */
+router.get('/health', healthController.check.bind(healthController));
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Health
+ *     description: Service health checks
+ */
+router.use('/notes', notesRoutes);
 
 module.exports = router;
